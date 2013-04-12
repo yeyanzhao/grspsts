@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/mvc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:beans="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+	
+	<!-- DataSource Bean -->
+	<beans:bean class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close" id="dataSource">
+	    <beans:property name="driverClassName" value="com.mysql.jdbc.Driver" />
+	    <beans:property name="url" value="jdbc:mysql://localhost/test" />
+	    <beans:property name="username" value="test" />
+	    <beans:property name="password" value="testxyz" />
+	</beans:bean>
+
+
+	<!-- DispatcherServlet Context: defines this servlet's request-processing infrastructure -->
+	
+	<!-- Enables the Spring MVC @Controller programming model -->
+	<annotation-driven />
+
+	<!-- Handles HTTP GET requests for /resources/** by efficiently serving up static resources in the ${webappRoot}/resources directory -->
+	<resources mapping="/resources/**" location="/resources/" />
+
+	<!-- for rythm -->
+	<beans:bean id="rythmConfigurator" class="com.ctlok.springframework.web.servlet.view.rythm.RythmConfigurator">
+	    <beans:property name="mode" value="dev" />
+	    <beans:property name="rootDirectory" value="/WEB-INF/rythm/" />
+	    <!-- beans:property name="tagRootDirectory" value="/WEB-INF/views/tags/" /  -->
+	</beans:bean>
+	<beans:bean id="rythmViewResolver" class="com.ctlok.springframework.web.servlet.view.rythm.RythmViewResolver">
+	    <beans:constructor-arg>
+	        <beans:ref bean="rythmConfigurator" />
+	    </beans:constructor-arg>
+	    <beans:property name="prefix" value="/WEB-INF/rythm/" />
+	    <beans:property name="suffix" value=".html" />
+	    <beans:property name="order" value="1" />
+	</beans:bean>
+	<beans:bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter" />
+	<beans:bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping">
+	    <beans:property name="interceptors">
+	        <beans:ref bean="localeChangeInterceptor" />
+	    </beans:property>
+	</beans:bean>
+	<!-- beans:bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource"  -->
+	<beans:bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+	    <beans:property name="basename" value="resources/messages" />
+	    <beans:property name="defaultEncoding" value="utf-8" />
+	</beans:bean>
+	<beans:bean id="localeResolver" class="org.springframework.web.servlet.i18n.CookieLocaleResolver">
+	    <beans:property name="defaultLocale" value="en" />
+	    <beans:property name="cookieName" value="locale" />
+	    <beans:property name="cookieMaxAge" value="31536000" />
+	</beans:bean>
+	<beans:bean id="localeChangeInterceptor" class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor">
+	    <beans:property name="paramName" value="lang" />
+	</beans:bean>
+	<!-- rythm end. spring rythm from: https://github.com/lawrence0819/spring-web-rythm-template  -->		
+
+
+	<!-- Resolves views selected for rendering by @Controllers to .jsp resources in the /WEB-INF/views directory 
+	-->
+	<beans:bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<beans:property name="prefix" value="/WEB-INF/views/" />
+		<beans:property name="suffix" value=".jsp" />
+		<beans:property name="order" value="2" />
+	</beans:bean>
+	
+	<context:component-scan base-package="yyz.cf.grsp.controller; yyz.cf.grsp.services" />
+	
+	
+	
+</beans:beans>
